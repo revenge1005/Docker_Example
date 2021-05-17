@@ -1,0 +1,22 @@
+FROM ubuntu:18.04
+
+MAINTAINER Choi, Seunghee <shchoi94@naver.com>
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ADD ./app/index.html /var/www/html/
+
+RUN apt-get update \
+	&& apt-get install -y apache2 php \
+	&& apt-get install -y vim wget locales
+
+ENV LANG ko_KR.UTF-8
+ENV LANGUAGE ko_KR.UTF-8
+RUN locale-gen ko_KR ko_KR.UTF-8 
+RUN update-locale LANG=ko_KR.UTF-8
+
+ENV DEBIAN_FRONTEND=
+
+EXPOSE 80
+
+CMD ["apachectl", "-D", "FOREGROUND"]

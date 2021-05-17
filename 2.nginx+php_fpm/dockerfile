@@ -1,0 +1,35 @@
+FROM ubuntu:18.04
+
+MAINTAINER Choi, Seunghee <shcho852@gmail.com>
+
+## Omit user input
+ENV DEBIAN_FRONTEND=noninteractive
+
+## Update
+RUN apt-get update 
+
+## Install Default App 
+RUN apt-get -y install vim curl git wget locales 
+
+## Install Nginx, PHP-FPM, Supervisor
+## PHP-FTP 7.2 Version
+RUN apt-get -y install nginx php-fpm supervisor && \
+	mkdir /run/php && \
+	rm -rf /etc/nginx/sites-available/* 
+
+## Forward request and error logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
+
+## locales Setting
+ENV LANG ko_KR.UTF-8
+ENV LANGUAGE ko_KR.UTF-8
+RUN locale-gen ko_KR ko_KR.UTF-8
+RUN update-locale LANG=ko_KR.UTF-8
+
+COPY ./app/index.php /var/www/html/
+COPY ./config/default /etc/nginx/sites-available/
+COPY ./config/supervisord.conf /etc/supervisor/conf.d/
+
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord"]
