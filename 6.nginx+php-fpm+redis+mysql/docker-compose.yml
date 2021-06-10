@@ -1,0 +1,31 @@
+version: '3'
+services:
+    web:
+        build:
+            context: ./nginx/
+            dockerfile: dockerfile
+        ports:
+            - '80:80'
+        depends_on:
+            - php_fpm
+        networks:
+            - test_net
+    php_fpm:
+        build:
+            context: ./php-fpm/
+            dockerfile: dockerfile
+        ports:
+            - '9000:9000'
+        depends_on:
+            - redis
+        networks:
+            - test_net
+    redis:
+        image: redis:latest
+        ports:
+            - '6379:6379'
+        networks:
+            - test_net
+networks:
+    test_net:
+        driver: bridge
