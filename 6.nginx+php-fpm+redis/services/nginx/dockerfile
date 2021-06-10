@@ -1,0 +1,27 @@
+FROM ubuntu:18.04
+
+MAINTAINER Choi, Seunghee <shcho852@gmail.com>
+
+## Omit user input
+ENV DEBIAN_FRONTEND=noninteractive
+
+## Update and Install Default App 
+RUN apt-get update \
+ && apt-get -y install vim curl git wget locales 
+
+## Install Nginx
+RUN apt-get -y install nginx \
+ && rm -rf /etc/nginx/sites-available/* 
+
+## locales Setting
+ENV LANG ko_KR.UTF-8
+ENV LANGUAGE ko_KR.UTF-8
+RUN locale-gen ko_KR ko_KR.UTF-8
+RUN update-locale LANG=ko_KR.UTF-8
+
+## config
+COPY ./config/default /etc/nginx/sites-available/
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
